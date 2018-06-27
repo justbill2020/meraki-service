@@ -16,7 +16,8 @@
   "license": "MIT",
   "dependencies": {
     "axios": "^0.18.0",
-    "json-bigint": "^0.2.3"
+    "json-bigint": "^0.2.3",
+    "tunnel": "0.0.5"
   },
   "devDependencies": {
     "docdash": "^0.4.0",
