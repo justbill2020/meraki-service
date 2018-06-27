@@ -25,7 +25,7 @@ $ Organizations:  [ { id: 549236, name: 'Meraki DevNet Sandbox' } ]
 const tunnel = require('tunnel')
 const axios = require("axios");
 const JSONbig = require("json-bigint")({ storeAsString: true });
-
+const {URL} = require('url')
 // httpsOverHttp proxy handler
 const getAgent = (proxy) => {
   if (typeof proxy=="string") {
@@ -45,11 +45,10 @@ const getAgent = (proxy) => {
 };
 
 function transformURL (url) {
-  let parser = document.createElement('a')
-  parser.href = url
+  let parser = new URL(url)
   let { origin, port, pathname, protocol} = parser
   if (port) {
- 	return url
+ 	  return url
   }
   port = protocol === "https:" ? 443 : 80
   return `${origin}:${port}${pathname}`
