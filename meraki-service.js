@@ -22,9 +22,27 @@ $ Organizations:  [ { id: 549236, name: 'Meraki DevNet Sandbox' } ]
 */
 
 //const admins = require('./endpoints/admins');
-
+const tunnel = require('tunnel')
 const axios = require("axios");
 const JSONbig = require("json-bigint")({ storeAsString: true });
+
+// httpsOverHttp proxy handler
+const agent = (proxy) => {
+  if (typeof proxy=="String") {
+    let _split = proxy.split('@')
+    let proxy = {
+        host: _split[1].split(':')[0],
+        port: _split[1].split(':')[1]
+      }
+    let proxyAuth = _split[0]
+    return tunnel.httpsOverHttp({
+      proxy,
+      proxyAuth
+    })
+  } else {
+    return undefined
+  }
+};
 
 // Meraki Error Handler (parses the error message within responses)
 function _handleError(e) {
@@ -72,11 +90,12 @@ class merakiService {
    * @param {string} baseUrl - The base Meraki API URL. Uses default:`https://api.meraki.com/api/v0`
    * @returns {}
    */
-  constructor(apiKey, baseUrl) {
+  constructor(apiKey, baseUrl, proxy) {
     this._apiKey = process.env.API_KEY || apiKey;
     this._baseUrl =
-      process.env.BASE_URL || baseUrl || "https://api.meraki.com/api/v0";
-    this._data; // stores request data to handle redirects properly
+      process.env.BASE_URL || baseUrl || "https://api.meraki.com:443/api/v0";
+      this._proxy = proxy
+      this._data; // stores request data to handle redirects properly
 
     this.initMeraki();
   }
@@ -96,7 +115,9 @@ class merakiService {
         "X-Cisco-Meraki-API-Key": this._apiKey,
         "Content-Type": "application/json"
       },
-      transformResponse: [JSONbig.parse]
+      transformResponse: [JSONbig.parse],
+      httpsAgent: agent(this._proxy),
+      proxy: false
     });
 
     this.meraki.interceptors.request.use(config => {
