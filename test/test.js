@@ -61,7 +61,6 @@ meraki.getPiiKeys(orgId, optionsPiiKeys).then((res) => {
 
 meraki.getOrganizations().then(res => {
   console.log("Organizations: ", res);
-  console.log("res[0]", res[0]);
 });
 
 /*
