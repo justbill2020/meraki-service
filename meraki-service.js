@@ -129,7 +129,7 @@ class merakiService {
    * @private
    */
   initMeraki() {
-    console.log(`=================> MERAKI-SERVICE v1 <=================`)
+    
     this.meraki = axios.create({
       baseURL: this._baseUrl,
       //maxRedirects: 0,
@@ -143,7 +143,9 @@ class merakiService {
     });
 
     this.meraki.interceptors.request.use(config => {
-
+      let {version} = require('./package.json')
+      console.log(`=================> MERAKI-SERVICE v${version} <=================`)
+      console.log(`=================>      REQUEST USE      <=================`)
       //console.log('config', config);
       //console.log('config.body', config.body);
       //console.log('config headers', config.headers)
