@@ -69,7 +69,7 @@ class merakiService {
    * Initialize a Meraki API Service
    * @constructor
    * @param {string} apiKey - The Meraki API key
-   * @param {string=} baseUrl - The base Meraki API URL. Uses default:`https://api.meraki.com/api/v0`
+   * @param {string} baseUrl - The base Meraki API URL. Uses default:`https://api.meraki.com/api/v0`
    * @returns {}
    */
   constructor(apiKey, baseUrl) {
@@ -91,7 +91,7 @@ class merakiService {
   initMeraki() {
     this.meraki = axios.create({
       baseURL: this._baseUrl,
-      maxRedirects: 0,
+      //maxRedirects: 0,
       headers: {
         "X-Cisco-Meraki-API-Key": this._apiKey,
         "Content-Type": "application/json"

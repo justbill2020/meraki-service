@@ -7,6 +7,7 @@ const handleBigInt = data => {
     return data;
   }
 };
+
 /**
  * Organizations
  * @module Organizations
@@ -16,9 +17,12 @@ const organizations = {
    * List the Organizations based on the API key
    */
   getOrganizations() {
-    return this.meraki
-      .get("/organizations", { transformResponse: [handleBigInt] })
-      .then(res => res.data);
+    return (
+      this.meraki
+        //.get("/organizations", { transformResponse: [handleBigInt] })
+        .get("/organizations")
+        .then(res => res.data)
+    );
   },
 
   /**
