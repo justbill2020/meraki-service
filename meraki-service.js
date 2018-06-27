@@ -27,8 +27,8 @@ const axios = require("axios");
 const JSONbig = require("json-bigint")({ storeAsString: true });
 
 // httpsOverHttp proxy handler
-const agent = (proxy) => {
-  if (typeof proxy=="String") {
+const getAgent = (proxy) => {
+  if (typeof proxy=="string") {
     let _split = proxy.split('@')
     let proxy = {
         host: _split[1].split(':')[0],
@@ -43,6 +43,17 @@ const agent = (proxy) => {
     return undefined
   }
 };
+
+function transformURL (url) {
+  let parser = document.createElement('a')
+  parser.href = url
+  let { origin, port, pathname, protocol} = parser
+  if (port) {
+ 	return url
+  }
+  port = protocol === "https:" ? 443 : 80
+  return `${origin}:${port}${pathname}`
+}
 
 // Meraki Error Handler (parses the error message within responses)
 function _handleError(e) {
@@ -93,7 +104,7 @@ class merakiService {
   constructor(apiKey, baseUrl, proxy) {
     this._apiKey = process.env.API_KEY || apiKey;
     this._baseUrl =
-      process.env.BASE_URL || baseUrl || "https://api.meraki.com:443/api/v0";
+      transformURL(process.env.BASE_URL || baseUrl || "https://api.meraki.com/api/v0");
       this._proxy = proxy
       this._data; // stores request data to handle redirects properly
 
@@ -116,19 +127,20 @@ class merakiService {
         "Content-Type": "application/json"
       },
       transformResponse: [JSONbig.parse],
-      httpsAgent: agent(this._proxy),
+      httpsAgent: getAgent(this._proxy),
       proxy: false
     });
 
     this.meraki.interceptors.request.use(config => {
-      //console.log('config', config);
+
+      console.log('config', config);
       //console.log('config.body', config.body);
       //console.log('config headers', config.headers)
       //console.log('config request', config.request)
       config.validateStatus = function(status) {
         return status == "308" || "307" || "302" || "301"; // do not throw error for redirects
       };
-
+      config.baseURL = transformURL(config.baseURL)
       this._data = config.body; // cached request to handle redirects
       this._headers = config.headers; // cached request to handle redirects
       return config;
@@ -145,9 +157,10 @@ class merakiService {
           (res.status == "308" || "307" || "302" || "301") &&
           res.headers.location
         ) {
-          //console.log('REDIRECT')
+          console.log('REDIRECT')
+          console.log('location: ', res.headers.location)
           var options = {
-            url: res.headers.location,
+            url: transformURL(res.headers.location),
             data: data,
             method: res.request.method,
             headers: headers
