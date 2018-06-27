@@ -37,6 +37,11 @@ const getAgent = (proxy) => {
         port: port
       }
     let proxyAuth = `${username}:${password}`
+    console.log(
+      'proxy and proxyAuth',
+      JSON.stringify(proxy),
+      JSON.stringify(proxyAuth)
+    )
     return tunnel.httpsOverHttp({
       proxy,
       proxyAuth
@@ -124,6 +129,7 @@ class merakiService {
    * @private
    */
   initMeraki() {
+    console.log(`=================> MERAKI-SERVICE v1 <=================`)
     this.meraki = axios.create({
       baseURL: this._baseUrl,
       //maxRedirects: 0,
@@ -138,7 +144,7 @@ class merakiService {
 
     this.meraki.interceptors.request.use(config => {
 
-      console.log('config', config);
+      //console.log('config', config);
       //console.log('config.body', config.body);
       //console.log('config headers', config.headers)
       //console.log('config request', config.request)
