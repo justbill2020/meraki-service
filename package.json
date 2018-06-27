@@ -1,6 +1,6 @@
 {
   "name": "meraki-service",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A Cisco Meraki Dashboard API service library. Uses Axios.",
   "main": "meraki-service.js",
   "scripts": {
