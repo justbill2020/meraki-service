@@ -28,20 +28,25 @@ const JSONbig = require("json-bigint")({ storeAsString: true });
 const {URL} = require('url')
 // httpsOverHttp proxy handler
 const getAgent = (proxy) => {
-  if (typeof proxy=="string") {
-    let _split = proxy.split('@')
+  let myProxy = proxy
+  if (typeof myProxy=="string") {
+    let proxyObj = new URL(myProxy)
+    let {hostname, port, username, password} = proxyObj
     let proxy = {
-        host: _split[1].split(':')[0],
-        port: _split[1].split(':')[1]
+        host: hostname,
+        port: port
       }
-    let proxyAuth = _split[0]
+    let proxyAuth = `${username}:${password}`
     return tunnel.httpsOverHttp({
       proxy,
       proxyAuth
     })
-  } else {
-    return undefined
+  } else if (typeof myProxy=="object"){
+    return myProxy
   }
+
+  return undefined
+
 };
 
 function transformURL (url) {
@@ -101,6 +106,7 @@ class merakiService {
    * @returns {}
    */
   constructor(apiKey, baseUrl, proxy) {
+    console.log(`constructor_proxy: ${proxy}`)
     this._apiKey = process.env.API_KEY || apiKey;
     this._baseUrl =
       transformURL(process.env.BASE_URL || baseUrl || "https://api.meraki.com/api/v0");
