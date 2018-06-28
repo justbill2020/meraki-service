@@ -25,7 +25,7 @@ const piiId = '660903245316620289'
 
 // Initialize Meraki
 //const meraki = new Meraki(API_KEY,API_URL);
-const meraki = new Meraki(API_KEY); // default settings
+const meraki = new Meraki(API_KEY,undefined,undefined,true); // default settings
 
 // ********************
 // Various test scripts
@@ -62,7 +62,9 @@ meraki.getPiiKeys(orgId, optionsPiiKeys).then((res) => {
 meraki.getOrganizations().then(res => {
   console.log("Organizations: ", res);
 });
-
+// meraki.getOrganization('').then(res => {
+//   console.log("Organization: ", res);
+// });
 /*
 const NEW_KEY = '2f301bccd61b6c642d250cd3f76e5eb66ebd170f';
 meraki.apiKey = NEW_KEY;

@@ -27,44 +27,7 @@ const request = require("request-promise");
 const JSONbig = require("json-bigint")({ storeAsString: true });
 const {URL} = require('url')
 
-// httpsOverHttp proxy handler
-const getAgent = (proxy) => {
-  let myProxy = proxy
-  if (typeof myProxy=="string") {
-    let proxyObj = new URL(myProxy)
-    let {hostname, port, username, password} = proxyObj
-    let proxy = {
-        host: hostname,
-        port: port
-      }
-    let proxyAuth = `${username}:${password}`
-    console.log(
-      'proxy and proxyAuth',
-      JSON.stringify(proxy),
-      JSON.stringify(proxyAuth)
-    )
-    return tunnel.httpsOverHttp({
-      proxy,
-      proxyAuth
-    })
-  } else if (typeof myProxy=="object"){
-    return myProxy
-  }
 
-  return undefined
-
-};
-
-function transformURL (url) {
-  return url
-  let parser = new URL(url)
-  let { origin, port, pathname, protocol} = parser
-  if (port) {
- 	  return url
-  }
-  port = protocol === "https:" ? 443 : 80
-  return `${origin}:${port}${pathname}`
-}
 
 // Meraki Error Handler (parses the error message within responses)
 function _handleError(e) {
@@ -110,18 +73,34 @@ class merakiService {
    * @constructor
    * @param {string} apiKey - The Meraki API key
    * @param {string} baseUrl - The base Meraki API URL. Uses default:`https://api.meraki.com/api/v0`
+   * @param {string} proxy - The proxy URL for corporate proxy passed to request. Uses default: undefined
+   * @param {boolean} returnArray - Should the response always return an array even if single object. Uses default: true
    * @returns {}
    */
-  constructor(apiKey, baseUrl, proxy) {
+  constructor(apiKey, baseUrl="https://api.meraki.com/api/v0", proxy=undefined, returnArray=false) {
     console.log(`constructor_proxy: ${proxy}`)
     this._apiKey = process.env.API_KEY || apiKey;
     this._baseUrl =
-      process.env.BASE_URL || baseUrl || "https://api.meraki.com/api/v0";
+      process.env.BASE_URL || baseUrl;
       this._proxy = proxy
       this._data; // stores request data to handle redirects properly
-
+      this._returnArray = returnArray
     this.initMeraki();
   }
+
+  /**
+     * @private
+     */
+
+  transformData (data){
+    let parsed = JSONbig.parse(data)
+    if (Array.isArray(parsed) || !this._returnArray) {
+      return parsed
+    }
+    let dataArr = new Array(parsed)
+    return dataArr
+  }
+
 
   // *************
   // Intialize API
@@ -139,14 +118,14 @@ class merakiService {
         "X-Cisco-Meraki-API-Key": this._apiKey,
         "Content-Type": "application/json"
       },
-      transform: JSONbig.parse,
+      transform: this.transformData.bind(this),
       proxy: this._proxy,
       followRedirect: true,
       followAllRedirects: true,
       // followOriginalHttpMethod: true,
       // removeRefererHeader: true
     });
-
+    
 /*     this.meraki.interceptors.request.use(config => {
       let {version} = require('./package.json')
       console.log(`=================> MERAKI-SERVICE v${version} <=================`)
