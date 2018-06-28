@@ -22,10 +22,11 @@ $ Organizations:  [ { id: 549236, name: 'Meraki DevNet Sandbox' } ]
 */
 
 //const admins = require('./endpoints/admins');
-const tunnel = require('tunnel')
-const axios = require("axios");
+// const tunnel = require('tunnel')
+const request = require("request-promise");
 const JSONbig = require("json-bigint")({ storeAsString: true });
 const {URL} = require('url')
+
 // httpsOverHttp proxy handler
 const getAgent = (proxy) => {
   let myProxy = proxy
@@ -55,6 +56,7 @@ const getAgent = (proxy) => {
 };
 
 function transformURL (url) {
+  return url
   let parser = new URL(url)
   let { origin, port, pathname, protocol} = parser
   if (port) {
@@ -114,7 +116,7 @@ class merakiService {
     console.log(`constructor_proxy: ${proxy}`)
     this._apiKey = process.env.API_KEY || apiKey;
     this._baseUrl =
-      transformURL(process.env.BASE_URL || baseUrl || "https://api.meraki.com/api/v0");
+      process.env.BASE_URL || baseUrl || "https://api.meraki.com/api/v0";
       this._proxy = proxy
       this._data; // stores request data to handle redirects properly
 
@@ -130,19 +132,23 @@ class merakiService {
    */
   initMeraki() {
     
-    this.meraki = axios.create({
-      baseURL: this._baseUrl,
+    this.meraki = request.defaults({
+      baseUrl: this._baseUrl,
       //maxRedirects: 0,
       headers: {
         "X-Cisco-Meraki-API-Key": this._apiKey,
         "Content-Type": "application/json"
       },
-      transformResponse: [JSONbig.parse],
-      httpsAgent: getAgent(this._proxy),
-      proxy: false
+      transform: [JSONbig.parse],
+      proxy: this._proxy,
+      followRedirect: true,
+      followAllRedirects: true,
+      // followOriginalHttpMethod: true,
+      // removeRefererHeader: true
     });
+    console.log(this.meraki)
 
-    this.meraki.interceptors.request.use(config => {
+/*     this.meraki.interceptors.request.use(config => {
       let {version} = require('./package.json')
       console.log(`=================> MERAKI-SERVICE v${version} <=================`)
       console.log(`=================>      REQUEST USE      <=================`)
@@ -158,7 +164,8 @@ class merakiService {
       this._headers = config.headers; // cached request to handle redirects
       return config;
     });
-
+*/
+/*
     this.meraki.interceptors.response.use(
       res => {
         const data = this._data;
@@ -191,7 +198,8 @@ class merakiService {
       error => {
         return _handleError(error);
       }
-    );
+    ); 
+  */
   }
 
   /**

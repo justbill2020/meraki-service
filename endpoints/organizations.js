@@ -1,13 +1,3 @@
-const JSONbig = require("json-bigint")({ storeAsString: true });
-
-const handleBigInt = data => {
-  try {
-    return JSON.parse(JSONBigInt.parse(data));
-  } catch (err) {
-    return data;
-  }
-};
-
 /**
  * Organizations
  * @module Organizations
@@ -21,7 +11,7 @@ const organizations = {
       this.meraki
         //.get("/organizations", { transformResponse: [handleBigInt] })
         .get("/organizations")
-        .then(res => res.data)
+        .then(res => res)
     );
   },
 
@@ -31,7 +21,7 @@ const organizations = {
    * @param {*} orgId
    */
   getOrganization(orgId) {
-    return this.meraki.get("/organizations/" + orgId).then(res => res.data);
+    return this.meraki.get("/organizations/" + orgId).then(res => res);
   },
 
   /**
@@ -43,7 +33,7 @@ const organizations = {
   updateOrganization(orgId, body) {
     return this.meraki
       .put("/organizations/" + orgId, body)
-      .then(res => res.data);
+      .then(res => res);
   },
 
   /**
@@ -52,7 +42,7 @@ const organizations = {
    * @param {*} body
    */
   createOrganization(body) {
-    return this.meraki.post("/organizations/", body).then(res => res.data);
+    return this.meraki.post("/organizations/", body).then(res => res);
   },
 
   /**
@@ -64,7 +54,7 @@ const organizations = {
   createOrganizationClone(orgId, body) {
     return this.meraki
       .post("/organizations/" + orgId + "/clone", body)
-      .then(res => res.data);
+      .then(res => res);
   },
 
   /**
@@ -76,7 +66,7 @@ const organizations = {
   claimOrderLicenseSerial(orgId, body) {
     return this.meraki
       .post("/organizations/" + orgId + "/claim", body)
-      .then(res => res.data);
+      .then(res => res);
   },
 
   /**
@@ -87,7 +77,7 @@ const organizations = {
   getLicenseState(orgId) {
     return this.meraki
       .get("/organizations/" + orgId + "/licenseState")
-      .then(res => res.data);
+      .then(res => res);
   },
 
   /**
@@ -98,7 +88,7 @@ const organizations = {
   getInventory(orgId) {
     return this.meraki
       .get("/organizations/" + orgId + "/inventory")
-      .then(res => res.data);
+      .then(res => res);
   },
 
   /**
@@ -109,7 +99,7 @@ const organizations = {
   getOrgDevices(orgId) {
     return this.meraki
       .get("/organizations/" + orgId + "/deviceStatuses")
-      .then(res => res.data);
+      .then(res => res);
   },
 
   /**
@@ -120,7 +110,7 @@ const organizations = {
   getSnmpSettings(orgId) {
     return this.meraki
       .get("/organizations/" + orgId + "/snmp")
-      .then(res => res.data);
+      .then(res => res);
   },
 
   /**
@@ -132,7 +122,7 @@ const organizations = {
   updateSnmpSettings(orgId, body) {
     return this.meraki
       .put("/organizations/" + orgId + "/snmp", body)
-      .then(res => res.data);
+      .then(res => res);
   },
 
   /**
@@ -143,7 +133,7 @@ const organizations = {
   getThirdPartyVpnPeers(orgId) {
     return this.meraki
       .get("/organizations/" + orgId + "/thirdPartyVPNPeers")
-      .then(res => res.data);
+      .then(res => res);
   },
 
   /**
@@ -155,7 +145,7 @@ const organizations = {
   updateThirdPartyVpnPeers(orgId, body) {
     return this.meraki
       .put("/organizations/" + orgId + "/thirdPartyVPNPeers", body)
-      .then(res => res.data);
+      .then(res => res);
   }
 };
 
