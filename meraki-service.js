@@ -139,14 +139,13 @@ class merakiService {
         "X-Cisco-Meraki-API-Key": this._apiKey,
         "Content-Type": "application/json"
       },
-      transform: [JSONbig.parse],
+      transform: JSONbig.parse,
       proxy: this._proxy,
       followRedirect: true,
       followAllRedirects: true,
       // followOriginalHttpMethod: true,
       // removeRefererHeader: true
     });
-    console.log(this.meraki)
 
 /*     this.meraki.interceptors.request.use(config => {
       let {version} = require('./package.json')
