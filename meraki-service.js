@@ -78,7 +78,6 @@ class merakiService {
    * @returns {}
    */
   constructor(apiKey, baseUrl="https://api.meraki.com/api/v0", proxy=undefined, returnArray=false) {
-    console.log(`constructor_proxy: ${proxy}`)
     this._apiKey = process.env.API_KEY || apiKey;
     this._baseUrl =
       process.env.BASE_URL || baseUrl;
